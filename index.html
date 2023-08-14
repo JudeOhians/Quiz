@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz App</title>
   <link rel="stylesheet" href="styles.css">
+  <title>Quiz App</title>
 </head>
 <body>
-  <div id="question-container" class="container"></div>
-  <div id="feedback" class="container feedback"></div>
-  <div id="timer" class="container timer"></div>
-  <script type="module" src="quiz.js"></script>
+  <div id="quiz-container">
+    <h1 id="question"></h1>
+    <div id="options"></div>
+    <p id="timer"></p>
+  </div>
   <script type="module" src="ui.js"></script>
 </body>
 </html>

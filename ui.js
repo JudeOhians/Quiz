@@ -1,55 +1,67 @@
 // ui.js
+
 import { quiz } from './quiz.js';
 
-const questionContainer = document.getElementById('question-container');
-const feedbackElement = document.getElementById('feedback');
+const questionElement = document.getElementById('question');
+const optionsElement = document.getElementById('options');
 const timerElement = document.getElementById('timer');
+let timerInterval;
 
 function displayQuestion() {
   const currentQuestion = quiz.getCurrentQuestion();
-  questionContainer.innerHTML = '';
+  questionElement.textContent = currentQuestion.question;
 
-  const questionElement = document.createElement('h2');
-  questionElement.textContent = currentQuestion.questionText;
-  questionContainer.appendChild(questionElement);
-
+  optionsElement.innerHTML = '';
   currentQuestion.options.forEach((option, index) => {
-    const optionElement = document.createElement('button');
-    optionElement.textContent = option;
-    optionElement.addEventListener('click', () => handleAnswer(option));
-    questionContainer.appendChild(optionElement);
+    const optionButton = document.createElement('button');
+    optionButton.textContent = option;
+    optionButton.addEventListener('click', () => handleAnswerClick(index));
+    optionsElement.appendChild(optionButton);
   });
+
+  startTimer(30); // Start a new timer for each question
 }
 
-function handleAnswer(selectedAnswer) {
+function startTimer(seconds) {
+  let timeLeft = seconds;
+  timerInterval = setInterval(() => {
+    timerElement.textContent = `Time: ${timeLeft}s`;
+    timeLeft--;
+
+    if (timeLeft < 0) {
+      clearInterval(timerInterval);
+      handleAnswerClick(-1); // Mark question as unanswered
+    }
+  }, 1000);
+}
+
+function resetTimer() {
+  clearInterval(timerInterval);
+  timerElement.textContent = '';
+}
+
+function handleAnswerClick(selectedIndex) {
+  resetTimer(); // Reset the timer for the next question
+
   const currentQuestion = quiz.getCurrentQuestion();
 
-  if (selectedAnswer === currentQuestion.correctAnswer) {
+  if (selectedIndex === -1) {
+    // User ran out of time
+    // Show timeout feedback
+  } else if (currentQuestion.options[selectedIndex] === currentQuestion.correctAnswer) {
     quiz.score++;
-    displayFeedback(true);
+    // Show correct feedback
   } else {
-    displayFeedback(false);
+    // Show incorrect feedback
   }
 
   quiz.currentQuestionIndex++;
-
   if (quiz.currentQuestionIndex < quiz.questions.length) {
     displayQuestion();
   } else {
-    displayFinalScore();
+    // Call a function to display final score and restart option
   }
 }
 
-function displayFeedback(isCorrect) {
-  feedbackElement.textContent = isCorrect ? 'Correct!' : 'Incorrect!';
-}
-
-function displayFinalScore() {
-  questionContainer.innerHTML = '';
-  const scoreElement = document.createElement('h2');
-  scoreElement.textContent = `Your Score: ${quiz.score} / ${quiz.questions.length}`;
-  questionContainer.appendChild(scoreElement);
-}
-
-// Call the initial display
+// Call displayQuestion() to show the first question
 displayQuestion();
